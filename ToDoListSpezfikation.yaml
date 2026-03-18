@@ -1,0 +1,270 @@
+openapi: 3.0.1
+info:
+  title: Todo-Listen-Verwaltung
+  description: ""
+  contact:
+    email: wichmann@bbs-os-brinkstr.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.1.0
+servers:
+- url: http://127.0.0.1:5000/
+tags:
+- name: Listenverwaltung
+- name: Eintragsverwaltung
+paths:
+  /todo-list/{list_id}:
+    get:
+      tags:
+      - Listenverwaltung
+      summary: Liefert alle Einträge einer Todo-Liste zurück
+      operationId: getList
+      parameters:
+      - name: list_id
+        in: path
+        description: ID der gewünschten Liste
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Erfolgreicher Abruf
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoEntry'
+        '404':
+          description: Fehlerhafte ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+    post:
+      tags:
+      - Listenverwaltung
+      summary: Fügt einen Eintrag zu einer bestehenden Todo-Liste hinzu
+      operationId: addEntry
+      parameters:
+      - name: list_id
+        in: path
+        description: ID der gewünschten Liste
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Eintrag-Objekt
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+        required: true
+      responses:
+        '201':
+          description: Erfolgreiches Anlegen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        '404':
+          description: Fehlerhafte ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+    delete:
+      tags:
+      - Listenverwaltung
+      summary: Löscht eine komplette Todo-Liste mit allen Einträgen
+      operationId: deleteList
+      parameters:
+      - name: list_id
+        in: path
+        description: ID der gewünschten Liste
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Erfolgreiches Löschen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '404':
+          description: Fehlerhafte ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /todo-list:
+    post:
+      tags:
+      - Listenverwaltung
+      summary: Fügt eine neue Todo-Liste hinzu
+      operationId: addList
+      requestBody:
+        description: Listen-Objekt
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+        required: true
+      responses:
+        '201':
+          description: Erfolgreiches Anlegen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+        '406':
+          description: Fehlerhafte Daten im Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /entry/{entry_id}:
+    patch:
+      tags:
+      - Eintragsverwaltung
+      summary: Aktualisiert einen bestehenden Eintrag
+      operationId: updateEntry
+      parameters:
+      - name: entry_id
+        in: path
+        description: ID des gewünschten Eintrags
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        description: Nur die zu ändernden Felder
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Erfolgreiches Aktualisieren
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoEntry'
+        '404':
+          description: Fehlerhafte ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '406':
+          description: Fehlerhafte Daten im Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoList'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+    delete:
+      tags:
+      - Eintragsverwaltung
+      summary: Löscht einen einzelnen Eintrag einer Todo-Liste
+      operationId: deleteEntry
+      parameters:
+      - name: entry_id
+        in: path
+        description: ID des gewünschten Eintrags
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Erfolgreiches Löschen
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '404':
+          description: Fehlerhafte ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+        '500':
+          description: Server-Fehler
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  schemas:
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    TodoEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
