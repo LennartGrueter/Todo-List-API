@@ -6,7 +6,7 @@
 2. Geben Sie den Inhalt des aktuellen Verzeichnisses aus.
 - ls
 
-3. Neues Verzeichnis /home/<Benutzer>/test erstellen  //Benutzer ist nur ein Placeholder
+3. Neues Verzeichnis /home/<"Benutzer">/test erstellen  //Benutzer ist nur ein Placeholder
 - mkdir /home/pi/test
 
 4. In das neu erstellte Verzeichnis wechseln
